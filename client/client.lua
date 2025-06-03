@@ -3,7 +3,7 @@ local isLoggedIn = LocalPlayer.state['isLoggedIn']
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    TriggerServerEvent('ns-achievements:CheckDB')
+    TriggerServerEvent('tss-achievements:CheckDB')
 end)
 
 AddEventHandler('onResourceStart', function(resource)
@@ -11,15 +11,15 @@ AddEventHandler('onResourceStart', function(resource)
         return
     end
     while not isLoggedIn do Wait(100) end
-    TriggerServerEvent('ns-achievements:CheckDB')
+    TriggerServerEvent('tss-achievements:CheckDB')
 end)
 
-RegisterNetEvent('ns-achievements:OpenAchievements',function()
+RegisterNetEvent('tss-achievements:OpenAchievements',function()
     OpenAchievements()
 end)
 
 function OpenAchievements()
-    QBCore.Functions.TriggerCallback('ns-achievements:GetAchievements', function(achievements)
+    QBCore.Functions.TriggerCallback('tss-achievements:GetAchievements', function(achievements)
         if achievements then
             local Array = {}
             for key, value in pairs(achievements) do
@@ -37,7 +37,7 @@ function OpenAchievements()
     end)
 end
 
-RegisterNetEvent('ns-achievements:AchievementEarned',function(code)
+RegisterNetEvent('tss-achievements:AchievementEarned',function(code)
     if not Config.Achievements[code] then return print("Error Wrong Code") end
     local timer = 10000
     if Config.NotificationTimeout ~= nil then

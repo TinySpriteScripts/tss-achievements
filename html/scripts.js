@@ -61,7 +61,7 @@ function CloseUI() {
 
     Open = false;
     
-    if (!navigator.sendBeacon('https://ns-achievements/close-ui', data)) {
+    if (!navigator.sendBeacon('https://tss-achievements/close-ui', data)) {
         console.error('Beacon send failed.');
     }
 }

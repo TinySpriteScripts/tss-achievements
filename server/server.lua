@@ -1,6 +1,6 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
-RegisterNetEvent('ns-achievements:CheckDB', function()
+RegisterNetEvent('tss-achievements:CheckDB', function()
     print("running DB check")
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
@@ -43,7 +43,7 @@ RegisterNetEvent('ns-achievements:CheckDB', function()
 
 end)
 
-QBCore.Functions.CreateCallback('ns-achievements:GetAchievements', function(source, cb)
+QBCore.Functions.CreateCallback('tss-achievements:GetAchievements', function(source, cb)
     local calltable = nil
     local Player = QBCore.Functions.GetPlayer(source)
     local cid = Player.PlayerData.citizenid
@@ -69,7 +69,7 @@ QBCore.Functions.CreateCallback('ns-achievements:GetAchievements', function(sour
 
 end)
 
-RegisterNetEvent('ns-achievements:AddValue',function(code,value)
+RegisterNetEvent('tss-achievements:AddValue',function(code,value)
     local src = source
     AddValue(src,code,value)
 end)
@@ -105,7 +105,7 @@ end
 
 exports('AddValue', AddValue)
 
-RegisterNetEvent('ns-achievements:AddGroupValue',function(group,value)
+RegisterNetEvent('tss-achievements:AddGroupValue',function(group,value)
     local src = source
     AddGroupValue(src,group,value)
 end)
@@ -126,7 +126,7 @@ function AddGroupValue(src, group, value)
                     if achievement and not achievement.isCompleted then
                         if achievement.currentValue + value >= v.valueNeeded then
                             achievement.isCompleted = true
-                            TriggerClientEvent('ns-achievements:AchievementEarned', src, k)
+                            TriggerClientEvent('tss-achievements:AchievementEarned', src, k)
                             changes = true
                         else
                             achievement.currentValue = achievement.currentValue + value
@@ -157,7 +157,7 @@ function EarnAchievement(src,code)
             if calltable[code] ~= nil then
                 if calltable[code].isCompleted == true then print("already completed") return end
                 calltable[code].isCompleted = true
-                TriggerClientEvent('ns-achievements:AchievementEarned', src, code)
+                TriggerClientEvent('tss-achievements:AchievementEarned', src, code)
                 local final = json.encode(calltable)
                 MySQL.update('UPDATE achievements SET myachievements = ? WHERE citizenid = ?', { final, cid }) 
                 -- if checktable.reward ~= nil then
