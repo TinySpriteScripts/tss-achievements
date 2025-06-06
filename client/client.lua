@@ -1,40 +1,27 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-local isLoggedIn = LocalPlayer.state['isLoggedIn']
-
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
-AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+onPlayerLoaded(function()
     TriggerServerEvent('tss-achievements:CheckDB')
-end)
-
-AddEventHandler('onResourceStart', function(resource)
-    if resource ~= GetCurrentResourceName() then
-        return
-    end
-    while not isLoggedIn do Wait(100) end
-    TriggerServerEvent('tss-achievements:CheckDB')
-end)
+end, true)
 
 RegisterNetEvent('tss-achievements:OpenAchievements',function()
     OpenAchievements()
 end)
 
 function OpenAchievements()
-    QBCore.Functions.TriggerCallback('tss-achievements:GetAchievements', function(achievements)
-        if achievements then
-            local Array = {}
-            for key, value in pairs(achievements) do
-                value.code = key
-                table.insert(Array, value)
-            end
-            SendNUIMessage({
-                action = "open-achievements",
-                Achievements = Array
-            })
-            SetNuiFocus(true, true)
-        else
-            print("error getting achievements")
+    local achievements = triggerCallback('tss-achievements:GetAchievements')
+    if achievements then
+        local Array = {}
+        for key, value in pairs(achievements) do
+            value.code = key
+            table.insert(Array, value)
         end
-    end)
+        SendNUIMessage({
+            action = "open-achievements",
+            Achievements = Array
+        })
+        SetNuiFocus(true, true)
+    else
+        print("error getting achievements")
+    end
 end
 
 RegisterNetEvent('tss-achievements:AchievementEarned',function(code)

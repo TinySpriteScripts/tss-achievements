@@ -2,11 +2,12 @@ fx_version 'cerulean'
 game 'gta5'
 author 'oosayeroo'
 description 'tss-achievements'
-version '1.0.0'
+version '1.1.0'
 lua54 'yes'
 
 shared_scripts {
     'shared/*.lua',
+    '@jim_bridge/starter.lua',
 }
 
 client_scripts {
@@ -27,3 +28,5 @@ files {
     'html/*.js',
     'html/*.css'
 }
+
+dependency 'jim_bridge'

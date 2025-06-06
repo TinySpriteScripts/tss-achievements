@@ -3,8 +3,8 @@ local QBCore = exports['qb-core']:GetCoreObject()
 RegisterNetEvent('tss-achievements:CheckDB', function()
     print("running DB check")
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local cid = Player.PlayerData.citizenid
+    local Player = getPlayer(src)
+    local cid = Player.citizenId
     local Achievements = {}
 
     MySQL.rawExecute('SELECT * FROM achievements WHERE citizenid = ?', { cid }, function(result)
@@ -43,10 +43,11 @@ RegisterNetEvent('tss-achievements:CheckDB', function()
 
 end)
 
-QBCore.Functions.CreateCallback('tss-achievements:GetAchievements', function(source, cb)
+createCallback('tss-achievements:GetAchievements', function(source)
     local calltable = nil
-    local Player = QBCore.Functions.GetPlayer(source)
-    local cid = Player.PlayerData.citizenid
+    local Player = getPlayer(source)
+    local cid = Player.citizenId
+    local p = promise.new()
 
     MySQL.rawExecute('SELECT * FROM achievements WHERE citizenid = ?', { cid }, function(result)
         if result[1] then
@@ -61,12 +62,13 @@ QBCore.Functions.CreateCallback('tss-achievements:GetAchievements', function(sou
                     checktable[k].currentValue = v.currentValue
                 end
             end
-            cb(checktable)
+            p:resolve(checktable)
         else
-            cb(nil)
+            p:resolve(nil)
         end    
     end)
 
+    return Citizen.Await(p)
 end)
 
 RegisterNetEvent('tss-achievements:AddValue',function(code,value)
@@ -78,8 +80,8 @@ function AddValue(src, code, value)
     if not Config.Achievements[code] then print("error wrong code") return end
     if not value then value = 1 end
     local valueNeeded = Config.Achievements[code].valueNeeded
-    local Player = QBCore.Functions.GetPlayer(src)
-    local cid = Player.PlayerData.citizenid
+    local Player = getPlayer(src)
+    local cid = Player.citizenId
 
     MySQL.rawExecute('SELECT * FROM achievements WHERE citizenid = ?', { cid }, function(result)
         if result[1] then
@@ -112,8 +114,8 @@ end)
 
 function AddGroupValue(src, group, value)
     if not value then value = 1 end
-    local Player = QBCore.Functions.GetPlayer(src)
-    local cid = Player.PlayerData.citizenid
+    local Player = getPlayer(src)
+    local cid = Player.citizenId
 
     MySQL.rawExecute('SELECT * FROM achievements WHERE citizenid = ?', { cid }, function(result)
         if result[1] then
@@ -148,8 +150,8 @@ end
 exports('AddGroupValue', AddGroupValue)
 
 function EarnAchievement(src,code)
-    local Player = QBCore.Functions.GetPlayer(src)
-    local cid = Player.PlayerData.citizenid
+    local Player = getPlayer(src)
+    local cid = Player.citizenId
     MySQL.rawExecute('SELECT * FROM achievements WHERE citizenid = ?', { cid }, function(result)
         if result[1] then
             calltable = json.decode(result[1].myachievements)
@@ -160,6 +162,7 @@ function EarnAchievement(src,code)
                 TriggerClientEvent('tss-achievements:AchievementEarned', src, code)
                 local final = json.encode(calltable)
                 MySQL.update('UPDATE achievements SET myachievements = ? WHERE citizenid = ?', { final, cid }) 
+                -- example code to intergrate rewards
                 -- if checktable.reward ~= nil then
                 --     if checktable.reward.type ~= nil and checktable.reward.amount ~= nil then
                 --         if checktable.reward.type == 'cash' then
